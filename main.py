@@ -1,11 +1,14 @@
 import cv2
 print(cv2.__file__)
+
 cap = cv2.VideoCapture(0)
 color = (0,0,255)
 stroke = 4
 
 face_cascades = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_alt2.xml')
 
+class CV:
+    def __init__():
 
 
 def computer_vision():
@@ -20,7 +23,6 @@ def computer_vision():
         cv2.imshow('frame', frame)
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
-    
     print("quitting computer VS")
 
 
