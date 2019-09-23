@@ -2,27 +2,34 @@ from Filereader import *
 import numpy as np
 from PIL import Image
 
+
 class Face_trainer:
     def __init__(self, cv, cascade, picture_folder = "pictures"):
         self.filereader = Filereader(picture_folder)
         self.cascade = cascade
         self.folder = picture_folder
         self.cv = cv
+        self.dict = {}
 
-    def train(self):
+    def train_label(self):
         (directories, files) = self.filereader.retrive_file_names()
         x_train = []
         labels = []
+        for dir in directories:
+            for face in files:
+                pil_image = Image.open(face).convert("L")
+                pil_image_array = np.array(pil_image, 'uint8')
+                faces = self.cascade.detectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
 
-        face_cascade = self.cv.Cascade
-        pil_image = Image.open(path).convert("L")
-        pil_image_array = np.array(pil_image, 'uint8')
-        faces = self.cascade.detectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
+                for (x,y,w,h) in faces:
+                        roi = pil_image_array[x+w, y+h]
+                        x_train.append(roi)
+                        labels.append(dir)
+        return (x_train, labels)
 
-        for (x,y,w,h) in faces:
-            roi = pil_image_array[x+w, y+h]
-            x_train.append(roi)
+    def train(self):
+        (x_train, labels) = self.train_label()
 
-ft = Face_trainer(1,2)
-
-ft.print()
+        recognizer =  self.cv.face.LBHFaceRecognizer_create()
+        recognizer.train(x_train, np.array(labels))
+        recognizer.save("trainer.yml")
