@@ -1,7 +1,7 @@
 # Sauron
 > As sauron this project makes your product see everything. So be aware, with great power comes great responsibility.
 
-I use openCV to find and classify faces that i feed it. 
+I use openCV to find and classify faces that I feed it. 
 
 ![](https://www.syfy.com/sites/syfy/files/styles/1200x680/public/wire/legacy/sauroneye.png)
 
