@@ -22,14 +22,13 @@ class Face_trainer:
                 pil_image_array = np.array(pil_image, 'uint8')
                 faces = self.cascade.detectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
                 for (x,y,w,h) in faces:
-                    roi = pil_image_array[x+w, y+h]
+                    roi = pil_image_array[x:x+w, y:y+h]
                     x_train.append(roi)
                     labels.append(index)
         return (x_train, labels)
 
     def train(self):
         (x_train, labels) = self.train_label()
-        print(x_train)
         recognizer =  self.cv.face.LBPHFaceRecognizer_create()
         recognizer.train(x_train, np.array(labels))
         recognizer.save("trainer.yml")
