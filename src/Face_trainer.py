@@ -9,7 +9,7 @@ class Face_trainer:
         self.cascade = cascade
         self.folder = picture_folder
         self.cv = cv
-#        self.dict = {}
+        self.names = {}
 
     def train_label(self):
         (directories, files) = self.filereader.retrive_file_names()
@@ -20,6 +20,7 @@ class Face_trainer:
             for face in face_dir:
                 pil_image = Image.open(face).convert("L")
                 pil_image_array = np.array(pil_image, 'uint8')
+                print(pil_image_array)
                 faces = self.cascade.detectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
                 for (x,y,w,h) in faces:
                     roi = pil_image_array[x:x+w, y:y+h]
