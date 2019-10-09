@@ -11,7 +11,6 @@ class Face_trainer:
     
     def get_names(self):
         (names, _) = self.filereader.retrive_file_names()
-        print(names)
         return names[0]
     
     def train_label(self):
@@ -23,10 +22,10 @@ class Face_trainer:
             for face in face_dir:
                 pil_image = Image.open(face).convert("L")
                 pil_image_array = np.array(pil_image, 'uint8')
-                faces = self.cascade.decleartectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
+                faces = self.cascade.detectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
 
                 for (x,y,w,h) in faces:
-                    roi = pil_image_array[x:x+w, ys:y+h]
+                    roi = pil_image_array[x:x+w, y:y+h]
                     x_train.append(roi)
                     labels.append(index)
         return (x_train, labels)

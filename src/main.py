@@ -53,8 +53,8 @@ class sauron:
 
 if __name__ == "__main__":
     sau = sauron()
-
     cap = cv2.VideoCapture(0)
+#    sau.train()
     while True:
         ret, frame = cap.read()
         values = sau.recognize_face(frame)
