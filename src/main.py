@@ -38,8 +38,8 @@ class sauron:
     def recognize_face(self,frame):
         face_list = []
         recognizer = cv2.face.LBPHFaceRecognizer_create()
-        recognizer.read("trainer.yml")
-
+        path = os.path.join(PROJECT_ROOT, "trainer.yml")
+        recognizer.read(path)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascades.detectMultiScale(
         gray, scaleFactor=1.5, minNeighbors=5)
