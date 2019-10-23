@@ -3,3 +3,9 @@
 *.lock
 .vscode
 
+.github
+
+src/.pytest_cache
+src/__pycache__
+
+pictures
