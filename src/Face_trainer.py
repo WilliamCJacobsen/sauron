@@ -25,12 +25,12 @@ class Face_trainer:
                 faces = self.cascade.detectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
 
                 for (x,y,w,h) in faces:
-                    print(index)
                     roi = pil_image_array[x:x+w, y:y+h]
-                    print(pil_image_array[x:x+w, y:y+h])
-                    roi = self.cv.resize(roi, dsize=(124,124), interpolation=self.cv.INTER_NEAREST) 
-                    x_train.append(roi)
-                    labels.append(index)
+                    
+                    if roi.size != 0:
+                        roi = self.cv.resize(roi, dsize=(124,124), interpolation=self.cv.INTER_NEAREST) 
+                        x_train.append(roi)
+                        labels.append(index)
 
         return (x_train, labels)
 

@@ -41,8 +41,8 @@ class ConvolutionNN:
         ft = Face_trainer(cv=self.cv, cascade = self.cascade)
         (x_values, y_labels) = ft.train_label()
         number_of_images = len(x_values)
-
-        x_values = np.array(np.stack(x_values, axis=0).reshape(43,124,124,1))
+        print("number of training images: " + str(number_of_images))
+        x_values = np.array(np.stack(x_values, axis=0).reshape(number_of_images,124,124,1))
         y_labels = np.stack(y_labels, axis=0)
         y_labels = keras.utils.to_categorical(y_labels,4)
 
@@ -53,4 +53,4 @@ class ConvolutionNN:
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-        model.fit(x_values, y_labels, epochs=1, batch_size=32)
+        model.fit(x_values, y_labels, epochs=10, batch_size=32)
