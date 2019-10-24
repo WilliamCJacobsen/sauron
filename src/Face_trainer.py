@@ -2,6 +2,7 @@ from Filereader import Filereader
 import numpy as np
 from PIL import Image
 import numpy as np
+import tensorflow as tf
 
 class Face_trainer:
     def __init__(self, cv, cascade, picture_folder = "pictures"):
@@ -26,12 +27,11 @@ class Face_trainer:
 
                 for (x,y,w,h) in faces:
                     roi = pil_image_array[x:x+w, y:y+h]
-                    
                     if roi.size != 0:
-                        roi = self.cv.resize(roi, dsize=(124,124), interpolation=self.cv.INTER_NEAREST) 
+                        roi = tf.keras.utils.normalize(roi,axis=-1,order=2)
+                        roi = self.cv.resize(roi, dsize=(300,300), interpolation=self.cv.INTER_NEAREST) 
                         x_train.append(roi)
                         labels.append(index)
-
         return (x_train, labels)
 
     def train(self):
