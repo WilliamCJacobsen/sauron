@@ -13,9 +13,11 @@ pipenv install
 cd src
 pipenv run python main.py
 ```
+
 ## Training
 For this you need images of the individuals and place them inside a folder called pictures inside sauron directory. Inside this folder you'll need subfolders with names of the individuals placed inside. You can only use .png and .jpeg files. 
 
+DECAPRECATED: 
 To run the training add 
 ```
 if __name__ == "__main__":
@@ -24,6 +26,13 @@ if __name__ == "__main__":
 ```
 inside main.py
 
+Usage of OpenCV is now decaprecated and will not be improved for later use. 
+This is because of CNN networking usage. To feed the network please use different pictures of the target.
+
 ## Usage example
 
 To classify members of a team. 
+
+## Info
+
+Uses CNN to classify the user. the result is softmax values. 
