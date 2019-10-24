@@ -14,4 +14,4 @@ class Filereader():
         for root, dirs, files in os.walk(self.image_dir):
            paths.append([os.path.join(root,file) for file in files if(file.endswith(".jpeg") or file.endswith(".png"))])
            directories.append([dir for dir in dirs])
-        return (list(filter(lambda x: x != [], directories)), list(filter(lambda x: x != [], paths)))
+        return (filter(lambda x: x != [], directories), filter(lambda x: x != [], paths))

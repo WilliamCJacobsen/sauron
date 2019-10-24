@@ -10,6 +10,10 @@ autopep8 = "*"
 numpy = "*"
 pillow = "*"
 opencv-contrib-python = "*"
+flake8 = "*"
+pytest = "*"
+keras = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.6"

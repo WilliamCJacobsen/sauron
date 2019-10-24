@@ -1,6 +1,8 @@
-from Filereader import *
+from Filereader import Filereader 
 import numpy as np
 from PIL import Image
+import numpy as np
+import tensorflow as tf
 
 class Face_trainer:
     def __init__(self, cv, cascade, picture_folder = "pictures"):
@@ -11,13 +13,12 @@ class Face_trainer:
     
     def get_names(self):
         (names, _) = self.filereader.retrive_file_names()
-        return names[0]
+        return names
     
     def train_label(self):
         (directories, files) = self.filereader.retrive_file_names()
         x_train = []
         labels = []
-
         for (index, face_dir) in enumerate(files):
             for face in face_dir:
                 pil_image = Image.open(face).convert("L")
@@ -26,8 +27,11 @@ class Face_trainer:
 
                 for (x,y,w,h) in faces:
                     roi = pil_image_array[x:x+w, y:y+h]
-                    x_train.append(roi)
-                    labels.append(index)
+                    if roi.size != 0:
+                        roi = tf.keras.utils.normalize(roi,axis=-1,order=2)
+                        roi = self.cv.resize(roi, dsize=(300,300), interpolation=self.cv.INTER_NEAREST) 
+                        x_train.append(roi)
+                        labels.append(index)
         return (x_train, labels)
 
     def train(self):
