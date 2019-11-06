@@ -3,6 +3,8 @@ from convolution_nn import ConvolutionNN
 import cv2
 import os
 import time
+from io import BytesIO
+from picamera import PiCamera
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 FACE_CASCADES = cv2.CascadeClassifier(os.path.join(PROJECT_ROOT, "cascades/data/haarcascade_frontalface_alt2.xml"))
@@ -11,9 +13,10 @@ if __name__ == "__main__":
     conv = ConvolutionNN(cv2, FACE_CASCADES)
 #    conv.model_summary()
     conv.training()
+    cam = PiCamera()
 
     while True:
-        cap = cv2.VideoCapture(0)
-        ret, frame = cap.read()
-        value = conv.recoginze(frame)
+        frame = BytesIO()
+        cam.capture(frame, 'png')
+        value = conv.recoginze(cv2.imdecode(frame.getvalue(), 0))
         print(value)
