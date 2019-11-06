@@ -5,7 +5,8 @@ import numpy as np
 import tensorflow as tf
 
 class Face_trainer:
-    def __init__(self, cv, cascade, picture_folder = "pictures"):
+    def __init__(self, cv, cascade, image_size:int, picture_folder = "pictures"):
+        self.image_size = image_size
         self.filereader = Filereader(picture_folder)
         self.cascade = cascade
         self.folder = picture_folder
@@ -29,7 +30,7 @@ class Face_trainer:
                     roi = pil_image_array[x:x+w, y:y+h]
                     if roi.size != 0:
                         roi = tf.keras.utils.normalize(roi,axis=-1,order=2)
-                        roi = self.cv.resize(roi, dsize=(300,300), interpolation=self.cv.INTER_NEAREST) 
+                        roi = self.cv.resize(roi, dsize=(self.image_size,self.image_size), interpolation=self.cv.INTER_NEAREST) 
                         x_train.append(roi)
                         labels.append(index)
         return (x_train, labels)
