@@ -9,13 +9,17 @@ import numpy as np
 #local imports
 from Face_trainer import Face_trainer
 
-
 OUTPUT = 3
+
+
 class ConvolutionNN:
-    def __init__(self, cv, cascade):
+    def __init__(self, cv, cascade, image_size: int):
+        self.image_size = image_size
         self.model = self.get_model()
         self.cv = cv
         self.cascade = cascade
+        self.ft = Face_trainer(cv=self.cv,image_size = image_size, cascade = self.cascade)
+
 
     def get_model(self):
         #model = load_model('src/model/my_model.h5')
@@ -24,11 +28,13 @@ class ConvolutionNN:
         else:
             # lager en ny model file hvis det ikke fantes en annen fra før av
             return Sequential([
-                Conv2D(32,(3,3),input_shape=(300,300,1), activation='relu', name='Conv2D-1'),
+                Conv2D(32,(3,3),input_shape=(self.image_size,self.image_size,1), activation='relu', name='Conv2D-1'),
                 MaxPooling2D(pool_size=2, name='MaxPool'),
-                Dropout(0.3, name='Dropout'),
+                Conv2D(64,(3,3), activation='relu', name='Conv2D-2'),
+                MaxPooling2D(pool_size=2, name='MaxPool-1'),
                 Flatten(name='flatten'),
-                Dense(64, activation='relu', name='Dense'),
+                Dense(600, activation='relu', name='Dense600'),
+                Dropout(0.1, name='Dropout1'),
                 Dense(OUTPUT, activation='softmax', name='Output')
                 ], name="Convolution model 2 batches")
 
@@ -42,20 +48,20 @@ class ConvolutionNN:
         for (x, y, w, h) in faces:
             roi = gray[y:y+h, x:x+w]
             if roi.size > 0:
-                roi = tf.keras.utils.normalize(roi,axis=-1,order=2)
-                roi = self.cv.resize(roi, dsize=(300,300), interpolation=self.cv.INTER_NEAREST)
-                prediction = self.model.predict(roi.reshape(1,300,300,1))
-                values.append(prediction)
+                roi = tf.keras.utils.normalize(roi, axis=-1,order=2)
+                roi = self.cv.resize(roi, dsize=(self.image_size,self.image_size), interpolation=self.cv.INTER_NEAREST)
+                prediction = self.model.predict(roi.reshape(1,self.image_size,self.image_size,1))
+                values.append(prediction[0])
         return values
 
     def training(self):
         # get images and reshape them
-        ft = Face_trainer(cv=self.cv, cascade = self.cascade)
-        (x_values, y_labels) = ft.train_label()
+        
+        (x_values, y_labels) = self.ft.train_label()
         number_of_images = len(x_values)
         print("number of training images: " + str(number_of_images))
 
-        x_values = np.array(np.stack(x_values, axis=0).reshape(number_of_images,300,300,1))
+        x_values = np.array(np.stack(x_values, axis=0).reshape(number_of_images,self.image_size,self.image_size,1))
         y_labels = np.stack(y_labels, axis=0)
         y_labels = keras.utils.to_categorical(y_labels,OUTPUT)
 
@@ -63,5 +69,5 @@ class ConvolutionNN:
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-        self.model.fit(x_values, y_labels, epochs=5, batch_size=32)
+        self.model.fit(x_values, y_labels, epochs=9, batch_size=32)
         self.model.save("src/model/my_model.h5") 
