@@ -1,3 +1,4 @@
+from sklearn.utils import shuffle
 #Keras imports
 from keras.models import Sequential
 from keras.models import load_model
@@ -63,6 +64,8 @@ class ConvolutionNN:
         x_values = np.array(np.stack(x_values, axis=0).reshape(number_of_images,self.image_size,self.image_size,1))
         y_labels = np.stack(y_labels, axis=0)
         y_labels = keras.utils.to_categorical(y_labels,OUTPUT)
+
+        x_values, y_labels = shuffle(x_values, y_labels, random_state = 101);
 
         self.model.compile(optimizer='rmsprop',
               loss='categorical_crossentropy',

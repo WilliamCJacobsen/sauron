@@ -12,7 +12,7 @@ class Sauron:
     def recognize_rasp(self):
         frame = BytesIO()
         self.cam.capture(frame, 'png')
-        value = conv.recoginze(cv2.imdecode(frame.getvalue(), 0))
+        value = self.convolution_nn.recoginze(cv2.imdecode(frame.getvalue(), 0))
         return value
 
     def recoginze(self):

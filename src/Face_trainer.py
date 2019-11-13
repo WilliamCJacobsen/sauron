@@ -18,6 +18,7 @@ class Face_trainer:
     
     def train_label(self):
         (directories, files) = self.filereader.retrive_file_names()
+        directories = list(directories)
         x_train = []
         labels = []
         for (index, face_dir) in enumerate(files):
@@ -36,7 +37,7 @@ class Face_trainer:
                         roi = self.cv.resize(roi, dsize=(self.image_size,self.image_size), interpolation=self.cv.INTER_NEAREST) 
                         x_train.append(roi)
                         labels.append(index)
-            print(f"directory: {directories[index]}, there are {counter} amount of faces out of {counter_image} images!")
+            print(f"directory: {directories[0][index]}, there are {counter} amount of faces out of {counter_image} images!")
         return (x_train, labels)
 
     def train(self):

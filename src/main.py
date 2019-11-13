@@ -9,7 +9,7 @@ FACE_CASCADES = cv2.CascadeClassifier(os.path.join(PROJECT_ROOT, "cascades/data/
 
 if __name__ == "__main__":
     conv = ConvolutionNN(cv2, FACE_CASCADES, 500)
-#    conv.train()
+    conv.train()
     the_eye = Sauron(conv)
 
 
