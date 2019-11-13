@@ -18,21 +18,26 @@ class Face_trainer:
     
     def train_label(self):
         (directories, files) = self.filereader.retrive_file_names()
+        directories = list(directories)
         x_train = []
         labels = []
         for (index, face_dir) in enumerate(files):
+            counter = 0
+            counter_image = 0
             for face in face_dir:
                 pil_image = Image.open(face).convert("L")
                 pil_image_array = np.array(pil_image, 'uint8')
                 faces = self.cascade.detectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
-
+                counter_image+= 1
                 for (x,y,w,h) in faces:
                     roi = pil_image_array[x:x+w, y:y+h]
                     if roi.size != 0:
+                        counter += 1
                         roi = tf.keras.utils.normalize(roi,axis=-1,order=2)
                         roi = self.cv.resize(roi, dsize=(self.image_size,self.image_size), interpolation=self.cv.INTER_NEAREST) 
                         x_train.append(roi)
                         labels.append(index)
+            print(f"directory: {directories[0][index]}, there are {counter} amount of faces out of {counter_image} images!")
         return (x_train, labels)
 
     def train(self):

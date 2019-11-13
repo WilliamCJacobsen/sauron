@@ -1,3 +1,4 @@
+from sklearn.utils import shuffle
 #Keras imports
 from keras.models import Sequential
 from keras.models import load_model
@@ -9,11 +10,11 @@ import numpy as np
 #local imports
 from Face_trainer import Face_trainer
 
-OUTPUT = 3
-
+OUTPUT = 4 
 
 class ConvolutionNN:
-    def __init__(self, cv, cascade, image_size: int):
+    def __init__(self, cv, cascade, image_size: int, epochs : int = 5):
+        self.epochs = epochs
         self.image_size = image_size
         self.model = self.get_model()
         self.cv = cv
@@ -22,7 +23,6 @@ class ConvolutionNN:
 
 
     def get_model(self):
-        #model = load_model('src/model/my_model.h5')
         if False:
             return model
         else:
@@ -54,7 +54,7 @@ class ConvolutionNN:
                 values.append(prediction[0])
         return values
 
-    def training(self):
+    def train(self):
         # get images and reshape them
         
         (x_values, y_labels) = self.ft.train_label()
@@ -65,9 +65,11 @@ class ConvolutionNN:
         y_labels = np.stack(y_labels, axis=0)
         y_labels = keras.utils.to_categorical(y_labels,OUTPUT)
 
+        x_values, y_labels = shuffle(x_values, y_labels, random_state = 101);
+
         self.model.compile(optimizer='rmsprop',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-        self.model.fit(x_values, y_labels, epochs=9, batch_size=32)
+        self.model.fit(x_values, y_labels, epochs=self.epochs, batch_size=32)
         self.model.save("src/model/my_model.h5") 
