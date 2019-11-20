@@ -47,6 +47,22 @@ class Face_trainer:
         recognizer.train(x_train, np.array(labels))
         recognizer.save("trainer.yml")
     
-    def haar_recognize(self):
+    def haar_recognize(self,frame):
         recognizer =  self.cv.face.LBPHFaceRecognizer_create()
         recognizer.read("trainer.yml")
+        
+        pil_image = Image.open(frame).convert("L")
+        pil_image_array = np.array(pil_image, 'uint8')
+        faces = self.cascade.detectMultiScale(pil_image_array, scaleFactor=1.5, minNeighbors=5)
+
+        for (x,y,w,h) in faces:
+            values = []
+            roi = pil_image_array[x:x+w, y:y+h]
+            if roi.size != 0:
+                id_, conf = recognizer.predict(roi)
+                values.append(id_)
+            
+        return values
+
+                
+                

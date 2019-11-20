@@ -1,18 +1,21 @@
-from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 #Keras imports
+import keras
 from keras.models import Sequential
 from keras.models import load_model
-import keras
+from keras.preprocessing.image import ImageDataGenerator
+from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Activation, Conv2D, MaxPooling2D, Dropout,Flatten
 import tensorflow as tf
 #misc imports 
 import numpy as np
+import time
 #local imports
 from Face_trainer import Face_trainer
 
 class ConvolutionNN:
-    def __init__(self, cv, cascade, image_size: int, output = 4, epochs : int = 20):
+    def __init__(self, cv, cascade, image_size: int, output = 4, epochs : int = 400):
         self.output = output
         self.epochs = epochs
         self.image_size = image_size
@@ -20,24 +23,32 @@ class ConvolutionNN:
         self.cv = cv
         self.cascade = cascade
         self.ft = Face_trainer(cv=self.cv,image_size = image_size, cascade = self.cascade)
+        self.generator = ImageDataGenerator(vertical_flip=True,
+        horizontal_flip=False, 
+        width_shift_range=0.125, 
+        height_shift_range=0.125, 
+        fill_mode="constant",
+        cval=0,
+        rotation_range=20)
+
 
 
     def get_model(self):
         try:
             print("returning model...")
-            return load_model("my_model.h5")
+            return load_model("my_model1574283011.436102.h5")
             print("fetch complete")
         except:
             print("fetch failed..")
             # lager en ny model file hvis det ikke fantes en annen fra før av
             return Sequential([
-                Conv2D(64,(3,3),input_shape=(self.image_size,self.image_size,1), activation='relu', name='Conv2D-1'),
+                Conv2D(64,(3,3),input_shape=(self.image_size,self.image_size,1), padding='same', activation='relu', name='Conv2D-1'),
                 MaxPooling2D(pool_size=2, name='MaxPool'),
-                Conv2D(32,(3,3), activation='relu', name='Conv2D-2'),
+                Conv2D(32,(3,3), activation='relu', name='Conv2D-2',padding='same'),
                 MaxPooling2D(pool_size=2, name='MaxPool-2'),
-                Conv2D(16,(3,3), activation='relu', name='Conv2D-3'),
+                Conv2D(16,(3,3), activation='relu', name='Conv2D-3',padding='same'),
                 Flatten(name='flatten'),
-                Dense(600, activation='relu', name='Dense600'),
+                Dense(512, activation='relu', name='Dense600'),
                 Dropout(0.1, name='Dropout1'),
                 Dense(self.output, activation='softmax', name='Output')
                 ], name="Convolution model 2 batches")
@@ -61,7 +72,7 @@ class ConvolutionNN:
 
     def train(self):
         # get images and reshape them
-        
+        es = EarlyStopping(monitor='val_loss',min_delta=1e-4,patience=10, verbose=2, restore_best_weights=True )
         (x_values, y_labels) = self.ft.train_label()
         number_of_images = len(x_values)
         print("number of training images: " + str(number_of_images))
@@ -80,10 +91,11 @@ class ConvolutionNN:
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-        self.model.fit(X_train, y_train, epochs=self.epochs, batch_size=32)
+        self.generator.fit(X_train)
+        self.model.fit_generator(self.generator.flow(X_train,y_train,batch_size=32),validation_data=(X_test,y_test), epochs=self.epochs, steps_per_epoch=number_of_images//32, callbacks= [es])
 
         loss, metrics = self.model.evaluate(X_test,y_test, batch_size = 32)
 
         print(f"loss value : {loss}")
         print(f"\n metrics : {metrics}")
-        self.model.save("my_model.h5")
+        self.model.save(f"models/my_model{time.time()}.h5")

@@ -16,8 +16,8 @@ USE_VIDEO_PORT = False
 RESOLUTION = (1296, 972) # (width, height). use a 4:3 resolution for max FOV
 
 if __name__ == "__main__":
-    conv = ConvolutionNN(cv2, FACE_CASCADES, 200)
-    #conv.model_summary()
+    conv = ConvolutionNN(cv2, FACE_CASCADES, 64)
+    conv.model_summary()
 #
 #    conv.train();
     the_eye = Sauron(conv)
