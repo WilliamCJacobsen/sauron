@@ -22,6 +22,7 @@ class Face_trainer:
         x_train = []
         labels = []
         for (index, face_dir) in enumerate(files):
+
             counter = 0
             counter_image = 0
             for face in face_dir:

@@ -10,10 +10,9 @@ import numpy as np
 #local imports
 from Face_trainer import Face_trainer
 
-OUTPUT = 4 
-
 class ConvolutionNN:
-    def __init__(self, cv, cascade, image_size: int, epochs : int = 5):
+    def __init__(self, cv, cascade, image_size: int, output = 3, epochs : int = 30):
+        self.output = output
         self.epochs = epochs
         self.image_size = image_size
         self.model = self.get_model()
@@ -23,25 +22,30 @@ class ConvolutionNN:
 
 
     def get_model(self):
-        if False:
-            return model
-        else:
+        try:
+            print("returning model...")
+            return load_model("my_model.h5")
+            print("fetch complete")
+        except:
+            print("fetch failed..")
             # lager en ny model file hvis det ikke fantes en annen fra før av
             return Sequential([
-                Conv2D(32,(3,3),input_shape=(self.image_size,self.image_size,1), activation='relu', name='Conv2D-1'),
+                Conv2D(64,(3,3),input_shape=(self.image_size,self.image_size,1), activation='relu', name='Conv2D-1'),
                 MaxPooling2D(pool_size=2, name='MaxPool'),
-                Conv2D(64,(3,3), activation='relu', name='Conv2D-2'),
-                MaxPooling2D(pool_size=2, name='MaxPool-1'),
+                Conv2D(32,(3,3), activation='relu', name='Conv2D-2'),
+                MaxPooling2D(pool_size=2, name='MaxPool-2'),
+                Conv2D(16,(3,3), activation='relu', name='Conv2D-3'),
                 Flatten(name='flatten'),
                 Dense(600, activation='relu', name='Dense600'),
                 Dropout(0.1, name='Dropout1'),
-                Dense(OUTPUT, activation='softmax', name='Output')
+                Dense(self.output, activation='softmax', name='Output')
                 ], name="Convolution model 2 batches")
 
     def model_summary(self):
         self.model.summary()
 
     def recoginze(self, frame):
+        names = list(self.ft.get_names())
         values = []
         gray = self.cv.cvtColor(frame, self.cv.COLOR_BGR2GRAY)
         faces = self.cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
@@ -51,7 +55,7 @@ class ConvolutionNN:
                 roi = tf.keras.utils.normalize(roi, axis=-1,order=2)
                 roi = self.cv.resize(roi, dsize=(self.image_size,self.image_size), interpolation=self.cv.INTER_NEAREST)
                 prediction = self.model.predict(roi.reshape(1,self.image_size,self.image_size,1))
-                values.append(prediction[0])
+                values.append(names[0][np.array(prediction[0]).argmax()])
         return values
 
     def train(self):
@@ -63,13 +67,15 @@ class ConvolutionNN:
 
         x_values = np.array(np.stack(x_values, axis=0).reshape(number_of_images,self.image_size,self.image_size,1))
         y_labels = np.stack(y_labels, axis=0)
-        y_labels = keras.utils.to_categorical(y_labels,OUTPUT)
+        y_labels = keras.utils.to_categorical(y_labels,self.output)
 
         x_values, y_labels = shuffle(x_values, y_labels, random_state = 101);
 
-        self.model.compile(optimizer='rmsprop',
+        adam_optimizer = keras.optimizers.Adam(1e-5)
+
+        self.model.compile(optimizer=adam_optimizer,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
         self.model.fit(x_values, y_labels, epochs=self.epochs, batch_size=32)
-        self.model.save("src/model/my_model.h5") 
+        self.model.save("my_model.h5")

@@ -4,7 +4,7 @@ import cv2
 import os
 import time
 import numpy as np
-from picamera import PiCamera
+#from picamera import PiCamera
 
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -16,9 +16,17 @@ USE_VIDEO_PORT = False
 RESOLUTION = (1296, 972) # (width, height). use a 4:3 resolution for max FOV
 
 if __name__ == "__main__":
-    conv = ConvolutionNN(cv2, FACE_CASCADES, 200)
-#    conv.model_summary()
-#    conv.train()
+    conv = ConvolutionNN(cv2, FACE_CASCADES, 600)
+    #conv.model_summary()
+#
+    conv.train();
+    the_eye = Sauron(conv)
+    
+    while True:
+        the_eye.recoginze()
+    
+
+"""
     cam = PiCamera(resolution=RESOLUTION)
 #    cam.rotation = 180 # uncomment to rotate (valid values are 0, 90, 180, 270)
 
@@ -38,4 +46,4 @@ if __name__ == "__main__":
         frame = buf[:RESOLUTION[1],:RESOLUTION[0]] # slice off padding pixels
         assert frame.base is buf # make sure slicing doesn't copy
         value = conv.recoginze(frame)
-        print(value)
+        print(value)""";
