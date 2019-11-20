@@ -1,4 +1,5 @@
 from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
 #Keras imports
 from keras.models import Sequential
 from keras.models import load_model
@@ -11,7 +12,7 @@ import numpy as np
 from Face_trainer import Face_trainer
 
 class ConvolutionNN:
-    def __init__(self, cv, cascade, image_size: int, output = 3, epochs : int = 30):
+    def __init__(self, cv, cascade, image_size: int, output = 4, epochs : int = 20):
         self.output = output
         self.epochs = epochs
         self.image_size = image_size
@@ -71,11 +72,18 @@ class ConvolutionNN:
 
         x_values, y_labels = shuffle(x_values, y_labels, random_state = 101);
 
+        X_train, X_test, y_train, y_test = train_test_split(x_values, y_labels, test_size=0.20, random_state=42)
+
         adam_optimizer = keras.optimizers.Adam(1e-5)
 
         self.model.compile(optimizer=adam_optimizer,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-        self.model.fit(x_values, y_labels, epochs=self.epochs, batch_size=32)
+        self.model.fit(X_train, y_train, epochs=self.epochs, batch_size=32)
+
+        loss, metrics = self.model.evaluate(X_test,y_test, batch_size = 32)
+
+        print(f"loss value : {loss}")
+        print(f"\n metrics : {metrics}")
         self.model.save("my_model.h5")

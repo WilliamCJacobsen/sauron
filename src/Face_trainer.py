@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 class Face_trainer:
-    def __init__(self, cv, cascade, image_size:int, picture_folder = "pictures"):
+    def __init__(self, cv, cascade, image_size: int, picture_folder = "pictures"):
         self.image_size = image_size
         self.filereader = Filereader(picture_folder)
         self.cascade = cascade
@@ -46,3 +46,7 @@ class Face_trainer:
         recognizer =  self.cv.face.LBPHFaceRecognizer_create()
         recognizer.train(x_train, np.array(labels))
         recognizer.save("trainer.yml")
+    
+    def haar_recognize(self):
+        recognizer =  self.cv.face.LBPHFaceRecognizer_create()
+        recognizer.read("trainer.yml")

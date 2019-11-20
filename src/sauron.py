@@ -17,8 +17,9 @@ class Sauron:
 #        return value
 
     def recoginze(self):
-        print("recognizing")
         ret, frame = self.cap.read()
         value = self.convolution_nn.recoginze(frame)
-        print(value)
+
+        if value:
+            print(value)
         return value
