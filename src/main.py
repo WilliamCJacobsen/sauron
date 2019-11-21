@@ -10,11 +10,6 @@ import numpy as np
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 FACE_CASCADES = cv2.CascadeClassifier(os.path.join(PROJECT_ROOT, "cascades/data/haarcascade_frontalface_alt2.xml"))
 
-# set to true if captures are too slow
-# the video port bypasses some postprocessing, sacrificing quality for framerate
-USE_VIDEO_PORT = False
-RESOLUTION = (1296, 972) # (width, height). use a 4:3 resolution for max FOV
-
 if __name__ == "__main__":
     conv = ConvolutionNN(cv2, FACE_CASCADES, 64)
     conv.model_summary()
