@@ -11,28 +11,44 @@ I use openCV to find and classify faces that I fed it.
 pip install pipenv
 pipenv install
 cd src
-pipenv run python main.py
 ```
 
-## Training
-For this you need images of the individuals and place them inside a folder called pictures inside sauron directory. Inside this folder you'll need subfolders with names of the individuals placed inside. You can only use .png and .jpeg files. 
+or
+```sh
+cd src 
+pip install -r requirements.txt
+```
 
-DECAPRECATED: 
+
+## Training
+For this you need images of the individuals and place them inside a folder called pictures inside sauron directory. Inside this folder you'll need subfolders with names of the individuals placed inside. You can only use .png or .jpeg/.jpg files. 
+
 To run the training add 
 ```
 if __name__ == "__main__":
-    the_eye = sauron()
-    the_eye.train()
+    conv = ConvolutionNN(cv2, FACE_CASCADES, 64)
+    conv.train();
 ```
 inside main.py
 
-Usage of OpenCV is now decaprecated and will not be improved for later use. 
-This is because of CNN networking usage. To feed the network please use different pictures of the target.
 
 ## Usage example
 
 To classify members of a team. 
 
+## Example
+```
+if __name__ == "__main__":
+    conv = ConvolutionNN(cv2, FACE_CASCADES, 64)
+    conv.model_summary()
+    
+    #conv.train();
+    the_eye = Sauron(conv)
+    
+    while True:
+        the_eye.recoginze()
+```
+
 ## Info
 
-Uses CNN to classify the user. the result is softmax values. 
+Uses CNN to classify the user. The result is softmax values. 
